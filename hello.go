@@ -9,22 +9,24 @@ import (
 func main() {
 	exibeIntroducao()
 
-	exibirMenu()
-	comando := lerComando()
+	for {
+		exibirMenu()
+		comando := lerComando()
 
-	if comando == 1 {
-		iniciarMonitoramento()
+		if comando == 1 {
+			iniciarMonitoramento()
 
-	} else if comando == 2 {
-		fmt.Println("exibindo log...")
+		} else if comando == 2 {
+			fmt.Println("exibindo log...")
 
-	} else if comando == 0 {
-		fmt.Println("Fechando programa")
-		os.Exit(0)
+		} else if comando == 0 {
+			fmt.Println("Fechando programa")
+			os.Exit(0)
 
-	} else {
-		fmt.Println("Não existe tal comando")
-		os.Exit(-1)
+		} else {
+			fmt.Println("Não existe tal comando")
+			os.Exit(-1)
+		}
 	}
 }
 
@@ -50,13 +52,19 @@ func lerComando() int {
 
 func iniciarMonitoramento() {
 	fmt.Println("Monitorando...")
+	sites := []string{"https://httpbin.org/status/404",
+		"https://www.alura.com.br", "https://www.caelum.com.br"}
 	// site com URL inexistente
-	site := "https://httpbin.org/status/404" // ou 200
-	resp, _ := http.Get(site)
+	for i, site := range sites {
+		fmt.Println(i, "- ", site)
+		resp, _ := http.Get(site)
 
-	if resp.StatusCode == 200 {
-		fmt.Println("Site:", site, "foi carregado com sucesso!")
-	} else {
-		fmt.Println("Site:", site, "está com problemas. Status Code:", resp.StatusCode)
+		if resp.StatusCode == 200 {
+			fmt.Println("Site:", site, "foi carregado com sucesso!")
+		} else {
+			fmt.Println("Site:", site, "está com problemas. Status Code:", resp.StatusCode)
+		}
+
 	}
+
 }
