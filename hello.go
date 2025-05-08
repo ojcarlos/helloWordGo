@@ -1,13 +1,18 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
+	"strings"
+	"time"
 )
 
 func main() {
 	exibeIntroducao()
+	lerArquivo()
 
 	for {
 		exibirMenu()
@@ -55,16 +60,47 @@ func iniciarMonitoramento() {
 	sites := []string{"https://httpbin.org/status/404",
 		"https://www.alura.com.br", "https://www.caelum.com.br"}
 	// site com URL inexistente
-	for i, site := range sites {
-		fmt.Println(i, "- ", site)
-		resp, _ := http.Get(site)
+	for j := 0; j < 5; j++ {
+		fmt.Println("INICIANDO BATERIA DE TESTES ", j)
+		for i, site := range sites {
+			fmt.Println("TESTE SITE ", i, ":", site)
+			testarSite(site)
+		}
+		time.Sleep(5 * time.Second)
+	}
 
-		if resp.StatusCode == 200 {
-			fmt.Println("Site:", site, "foi carregado com sucesso!")
-		} else {
-			fmt.Println("Site:", site, "está com problemas. Status Code:", resp.StatusCode)
+}
+func testarSite(site string) {
+	fmt.Println(site)
+	resp, _ := http.Get(site)
+
+	if resp.StatusCode == 200 {
+		fmt.Println("Site:", site, "foi carregado com sucesso!")
+	} else {
+		fmt.Println("Site:", site, "está com problemas. Status Code:", resp.StatusCode)
+	}
+
+}
+
+func lerArquivo() []string {
+	var sites []string
+	arquivo, err := os.Open("sites.txt")
+	if err != nil {
+		fmt.Println("ERROR: ", err)
+	}
+	leitor := bufio.NewReader(arquivo)
+
+	for {
+		linha, err := leitor.ReadString('\n')
+		linha = strings.TrimSpace(linha)
+		fmt.Println(linha)
+		sites = append(sites, linha)
+		if err == io.EOF {
+			break
 		}
 
 	}
-
+	arquivo.Close()
+	fmt.Println(sites)
+	return sites
 }
